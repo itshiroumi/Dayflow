@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10192b">
+  <meta name="description" content="Plan school, work and fitness in one smart weekly schedule. Your private data stays on your device.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>DayFlow — School, Work & Fitness</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0d1422; --bg2:#101a2a; --panel:#162237; --raised:#1c2b43; --stroke:#2a3a52; --text:#f1f6ff; --muted:#9cacbe; --mint:#65e5b4; --blue:#84a9fa; --orange:#f6c17a; --pink:#f4a4ba; --purple:#c4b0f8; --radius:20px; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+    button, input, select { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid var(--mint); outline-offset:2px; }
+    .app-shell { max-width:1060px; margin:auto; min-height:100dvh; padding:0 18px 114px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:24px 2px 16px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:850; font-size:20px; letter-spacing:-.6px; }
+    .brand-icon { display:grid; place-items:center; background:linear-gradient(140deg,#69e3b6,#8d9bf9); color:#092438; width:36px; height:36px; border-radius:12px; font-weight:900; }
+    .top-date { color:var(--muted); font-size:12px; text-align:right; }
+    h1 { font-size:31px; line-height:1.16; letter-spacing:-1.1px; margin:4px 0 7px; font-weight:800; }
+    h2 { font-size:18px; margin:0; letter-spacing:-.35px; }
+    h3 { font-size:15px; margin:0; }
+    p { margin:0; }
+    .sub { color:var(--muted); font-size:14px; line-height:1.5; }
+    .section { margin-top:24px; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:13px; }
+    .panel { background:var(--panel); border:1px solid var(--stroke); border-radius:var(--radius); padding:18px; }
+    .hero { background:linear-gradient(130deg,#243750 0%,#17273b 65%,#183d3b 130%); border:1px solid #37536a; border-radius:24px; padding:22px; position:relative; overflow:hidden; }
+    .hero:after { content:""; background:radial-gradient(circle, #64e5b428 0, transparent 70%); width:220px; height:220px; position:absolute; right:-90px; top:-120px; pointer-events:none; }
+    .hero h1 { max-width:490px; }
+    .eyebrow { color:var(--mint); font-size:11px; letter-spacing:1.8px; text-transform:uppercase; font-weight:800; }
+    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; margin-top:17px; }
+    .stat { background:var(--panel); border:1px solid var(--stroke); border-radius:17px; padding:15px; min-width:0; }
+    .stat .value { font-size:25px; font-weight:780; letter-spacing:-.6px; margin:3px 0; }
+    .stat small { color:var(--muted); font-size:12px; }
+    .muted { color:var(--muted); }
+    .progress { background:#283850; height:7px; border-radius:9px; overflow:hidden; margin-top:10px; }
+    .progress > i { height:100%; display:block; background:var(--mint); border-radius:9px; }
+    .progress.blue > i { background:var(--blue); }
+    .progress.orange > i { background:var(--orange); }
+    .btn { display:inline-flex; justify-content:center; align-items:center; gap:7px; border:1px solid var(--stroke); background:var(--raised); color:var(--text); padding:11px 14px; border-radius:12px; font-weight:700; font-size:13px; line-height:1.2; text-align:center; }
+    .btn:active { transform:translateY(1px); }
+    .btn.primary { background:var(--mint); color:#082c29; border-color:var(--mint); }
+    .btn.ghost { background:transparent; }
+    .btn.danger { color:#ffc4ca; border-color:#694154; }
+    .btn.sm { padding:7px 10px; border-radius:9px; font-size:12px; }
+    .btn.full { width:100%; }
+    .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:17px; }
+    .pill { font-size:11px; padding:5px 9px; border-radius:100px; font-weight:750; white-space:nowrap; }
+    .pill.school { background:#243f71; color:#b9d0ff; }
+    .pill.work { background:#4f3928; color:#f8d19a; }
+    .pill.workout { background:#164a44; color:#8ff1c8; }
+    .pill.study { background:#3b325a; color:#d8c6ff; }
+    .pill.personal { background:#42334d; color:#e7c6f3; }
+    .pill.deadline { background:#56313d; color:#ffc4d0; }
+    .items { display:flex; flex-direction:column; gap:9px; }
+    .event { display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--stroke); border-radius:15px; padding:12px 13px; min-width:0; }
+    .event-indicator { width:4px; align-self:stretch; border-radius:8px; background:var(--blue); flex-shrink:0; }
+    .event-indicator.work { background:var(--orange); }
+    .event-indicator.workout { background:var(--mint); }
+    .event-indicator.study { background:var(--purple); }
+    .event-indicator.personal { background:var(--pink); }
+    .event-indicator.deadline { background:#fb8898; }
+    .event-main { flex:1; min-width:0; }
+    .event-title { font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .event-time { font-size:12px; color:var(--muted); margin-top:2px; }
+    .empty { text-align:center; padding:29px 17px; background:var(--panel); border:1px dashed #46566a; border-radius:18px; }
+    .empty .emoji { font-size:26px; margin-bottom:8px; }
+    .empty p { margin:6px auto 16px; max-width:350px; }
+    .nav { position:fixed; z-index:20; bottom:0; left:0; width:100%; background:#111d30f2; backdrop-filter:blur(17px); border-top:1px solid #30435a; padding:9px max(14px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)); }
+    .nav-in { max-width:650px; margin:auto; display:grid; grid-template-columns:repeat(4,1fr); }
+    .nav button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:none; border:0; color:#91a3b8; font-size:11px; font-weight:680; padding:5px 2px; border-radius:11px; }
+    .nav button.active { color:var(--mint); background:#1c3a39; }
+    .nav svg { width:21px; height:21px; }
+    .week-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; }
+    .week-nav { display:flex; align-items:center; gap:8px; }
+    .week-strip { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; margin:15px 0; }
+    .day { min-width:0; border:1px solid var(--stroke); background:var(--panel); border-radius:13px; color:var(--text); padding:10px 0 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .day small { font-size:10px; color:var(--muted); text-transform:uppercase; }
+    .day strong { font-size:16px; }
+    .day.today:not(.selected) { border-color:var(--mint); }
+    .day.selected { background:var(--mint); border-color:var(--mint); color:#0c3029; }
+    .day.selected small { color:#245a4b; }
+    .dot-row { height:4px; display:flex; gap:3px; }
+    .dot { height:4px; width:4px; border-radius:100%; background:var(--blue); }
+    .day.selected .dot { background:#256754; }
+    .columns { display:grid; grid-template-columns:1fr; gap:14px; }
+    .slot { display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid #33574f; border-radius:14px; background:#172e31; padding:12px; }
+    .slot strong { font-size:14px; }
+    .slot small { display:block; color:#aad0c8; margin-top:3px; }
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .field.full { grid-column:1/-1; }
+    label { color:#cad5e4; font-size:12px; font-weight:700; }
+    input,select { border:1px solid #3b4e65; border-radius:11px; background:#101b2c; color:var(--text); padding:11px 10px; outline:0; width:100%; min-height:44px; }
+    input[type=date],input[type=time] { color-scheme:dark; }
+    input[type=checkbox] { width:auto; min-height:auto; accent-color:var(--mint); }
+    .days-checks { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+    .days-checks label { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:#1e2c43; border:1px solid var(--stroke); border-radius:10px; padding:8px 2px; font-size:11px; }
+    dialog { background:var(--panel); border:1px solid #42556f; border-radius:22px; color:var(--text); width:min(470px,calc(100vw - 28px)); max-height:min(90dvh,810px); overflow:auto; padding:20px; box-shadow:0 30px 100px #000b; }
+    dialog::backdrop { background:#030711ce; backdrop-filter:blur(5px); }
+    .modal-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:19px; }
+    .modal-foot { display:flex; justify-content:space-between; gap:9px; margin-top:16px; }
+    .modal-foot .right { display:flex; gap:8px; }
+    .note { background:#203047; border-left:3px solid var(--blue); border-radius:9px; padding:11px 13px; color:#c6d7e9; font-size:12px; }
+    .health-grid { display:grid; grid-template-columns:1fr; gap:12px; }
+    .log-list { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+    .log-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid #314158; }
+    .log-row:last-child { border-bottom:0; }
+    .log-row strong { font-size:13px; }
+    .log-row small { color:var(--muted); display:block; margin-top:2px; }
+    .small-info { font-size:12px; color:var(--muted); }
+    .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .toast { position:fixed; z-index:80; left:50%; bottom:90px; transform:translateX(-50%); border-radius:12px; padding:11px 16px; background:#d8fff0; color:#0b3430; font-weight:700; box-shadow:0 12px 40px #0007; max-width:90vw; min-width:160px; text-align:center; display:none; }
+    .toast.show { display:block; }
+    .inline-note { color:var(--muted); font-size:12px; margin-top:8px; }
+    .split-head { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .chart { width:100%; height:140px; }
+    .chart svg { width:100%; height:100%; overflow:visible; }
+    .two-col-card { display:grid; gap:12px; grid-template-columns:1fr; }
+    button[disabled] { opacity:.45; cursor:not-allowed; }
+    @media(min-width:750px) { .app-shell { padding:0 27px 90px; } .topbar{padding-top:28px;} .stats{grid-template-columns:repeat(4,minmax(0,1fr));} .columns{grid-template-columns:1.25fr .95fr;} .health-grid{grid-template-columns:1fr 1fr;} .two-col-card{grid-template-columns:1fr 1fr;} .nav{bottom:19px;left:50%;transform:translateX(-50%);width:460px;border:1px solid var(--stroke);border-radius:20px;padding:7px;box-shadow:0 13px 40px #0007;} }
+    @media(max-width:370px) { .app-shell{padding-left:12px;padding-right:12px;} .panel{padding:14px;} .day{border-radius:10px;} .day strong{font-size:14px;} .stat{padding:12px;} .stat .value{font-size:22px;} }
+    @media(prefers-reduced-motion:no-preference) { .btn,.nav button,.day { transition:background .15s ease,transform .15s ease; } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-icon">D</div> DayFlow</div>
+      <div class="top-date" id="top-date"></div>
+    </header>
+    <main id="main" aria-live="polite"></main>
+  </div>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-in" id="nav-buttons"></div>
+  </nav>
+  <dialog id="event-dialog" aria-labelledby="event-dialog-title">
+    <div class="modal-head"><h2 id="event-dialog-title">Add an event</h2><button class="btn ghost sm" type="button" data-action="close-dialog" aria-label="Close">✕</button></div>
+    <form id="event-form">
+      <input type="hidden" name="eventId" id="event-id">
+      <div class="form-grid">
+        <div class="field full"><label for="event-title">Event name</label><input name="title" id="event-title" placeholder="e.g. CEE 421 Lecture" maxlength="80" required></div>
+        <div class="field full"><label for="event-type">Category</label><select name="type" id="event-type"><option value="school">School / class</option><option value="work">Work shift</option><option value="study">Study / assignment</option><option value="workout">Workout</option><option value="personal">Personal</option><option value="deadline">Deadline / exam</option></select></div>
+        <div class="field full" id="workout-kind-wrap" style="display:none"><label for="workout-kind">Workout type</label><select id="workout-kind" name="kind"><option value="cardio">Cardio</option><option value="strength">Strength</option></select></div>
+        <div class="field"><label for="event-start">Start</label><input name="start" id="event-start" type="time" value="09:00" required></div>
+        <div class="field"><label for="event-end">End</label><input name="end" id="event-end" type="time" value="10:00" required></div>
+        <div class="field full"><label for="event-repeat">Schedule type</label><select id="event-repeat" name="repeat"><option value="weekly">Repeats weekly</option><option value="once">One specific date</option></select></div>
+        <div id="repeat-days" class="field full"><label>Repeat on</label><div class="days-checks" id="day-checks"></div></div>
+        <div id="one-date" class="field full" style="display:none"><label for="event-date">Date</label><input id="event-date" name="date" type="date"></div>
+      </div>
+      <p id="event-warning" class="inline-note" role="status"></p>
+      <div class="modal-foot"><button class="btn danger sm" type="button" id="delete-event" data-action="delete-event" style="display:none">Delete</button><span id="empty-foot"></span><div class="right"><button class="btn ghost" type="button" data-action="close-dialog">Cancel</button><button class="btn primary" type="submit">Save event</button></div></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    'use strict';
+    const STORAGE_KEY='dayflow-v1';
+    const DAY_SHORT=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const CATEGORY_NAMES={school:'School',work:'Work',workout:'Workout',study:'Study',personal:'Personal',deadline:'Deadline'};
+    const DEFAULTS={version:1,settings:{calories:2200,protein:130,steps:8000,cardioWeekly:180,goalWeight:153},events:[],foods:[],workouts:[],weights:[],steps:{}};
+    let state=loadState();
+    let ui={screen:'today',date:isoDate(new Date()),healthDate:isoDate(new Date()),planType:'cardio',planMinutes:40};
+    let toastTimer;
+    function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return structuredClone(DEFAULTS);let x=JSON.parse(raw); if(!x||x.version!==1)throw Error('Unsupported version'); return {version:1,settings:{...DEFAULTS.settings,...(x.settings||{})},events:Array.isArray(x.events)?x.events:[],foods:Array.isArray(x.foods)?x.foods:[],workouts:Array.isArray(x.workouts)?x.workouts:[],weights:Array.isArray(x.weights)?x.weights:[],steps:x.steps&&typeof x.steps==='object'?x.steps:{}};}catch(e){return structuredClone(DEFAULTS);}}
+    function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){toast('Storage unavailable. Export your data to keep a copy.');}}
+    function id(){return crypto.randomUUID?crypto.randomUUID():'id'+Date.now()+Math.random().toString(36).slice(2);}
+    function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function isoDate(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+    function parseDate(x){let [y,m,d]=x.split('-').map(Number);return new Date(y,m-1,d,12,0,0);}
+    function addDays(x,n){let d=parseDate(x);d.setDate(d.getDate()+n);return isoDate(d);}
+    function weekday(x){return (parseDate(x).getDay()+6)%7;}
+    function weekStart(x){return addDays(x,-weekday(x));}
+    function formattedDate(x,options={weekday:'long',month:'long',day:'numeric'}){return parseDate(x).toLocaleDateString(undefined,options);}
+    function timeVal(t){const [h,m]=t.split(':').map(Number);return h*60+m;}
+    function hhmm(n){return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;}
+    function prettyTime(x){return new Date('2000-01-01T'+x+':00').toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});}
+    function pct(n,d){return Math.min(100,Math.max(0,Math.round(d?n/d*100:0)));}
+    function sum(a,key){return a.reduce((total,o)=>total+(+o[key]||0),0);}
+    function today(){return isoDate(new Date());}
+    function getEvents(date){return state.events.filter(e=>e.repeat==='weekly'?e.days?.includes(weekday(date)):e.date===date).sort((a,b)=>a.start.localeCompare(b.start));}
+    function foodsFor(date){return state.foods.filter(f=>f.date===date);}
+    function workoutFor(date){return state.workouts.filter(w=>w.date===date);}
+    function weekWorkoutMinutes(date){let start=weekStart(date);return sum(state.workouts.filter(w=>w.date>=start&&w.date<=addDays(start,6)&&w.type==='cardio'),'minutes');}
+    function stepValue(date){return +state.steps[date]||0;}
+    function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3100);}
+    function head(title,subtitle){return `<div class="section-head"><div><h1>${title}</h1>${subtitle?`<p class="sub">${subtitle}</p>`:''}</div></div>`;}
+    function button(label,action,extra=''){return `<button class="btn ${extra}" data-action="${action}">${label}</button>`;}
+    function progress(label,current,target,unit,cls=''){return `<div><div class="split-head"><span class="small-info">${label}</span><strong style="font-size:13px">${Math.round(current)} <span class="muted">/ ${target} ${unit}</span></strong></div><div class="progress ${cls}"><i style="width:${pct(current,target)}%"></i></div></div>`;}
+    function eventCard(e,date){const done=e.type==='workout'&&state.workouts.some(w=>w.eventId===e.id&&w.date===date);return `<div class="event"><span class="event-indicator ${esc(e.type)}"></span><div class="event-main"><div class="event-title">${esc(e.title)} ${done?'✓':''}</div><div class="event-time">${prettyTime(e.start)} – ${prettyTime(e.end)}</div></div><span class="pill ${esc(e.type)}">${CATEGORY_NAMES[e.type]||'Event'}</span>${e.type==='workout'&&!done?`<button class="btn sm primary" data-action="complete-workout" data-id="${esc(e.id)}" data-date="${esc(date)}" aria-label="Mark workout complete">✓</button>`:''}<button class="btn sm ghost" data-action="edit-event" data-id="${esc(e.id)}" aria-label="Edit ${esc(e.title)}">⋯</button></div>`;}
+    function eventList(date){let events=getEvents(date);return events.length?`<div class="items">${events.map(e=>eventCard(e,date)).join('')}</div>`:`<div class="empty"><div class="emoji">🗓️</div><strong>Nothing scheduled yet</strong><p class="sub">Add classes, shifts, or study blocks. DayFlow will find workout openings around them.</p>${button('+ Add an event','add-event','primary')}</div>`;}
+    function freeSlots(date,duration){if(date<today())return [];let blocks=getEvents(date).map(e=>[Math.max(0,timeVal(e.start)-10),Math.min(1440,timeVal(e.end)+10)]).sort((a,b)=>a[0]-b[0]);let current=0,free=[];for(const [s,e] of blocks){if(s>current)free.push([current,s]);current=Math.max(current,e);}if(current<1440)free.push([current,1440]);let now=new Date(),earliest=420;if(date===today())earliest=Math.max(420,now.getHours()*60+now.getMinutes()+20);let latest=1290;let ranges=free.map(([a,b])=>[Math.max(a,earliest),Math.min(b,latest)]).filter(([a,b])=>b-a>=duration);let preferred=[17*60+30,18*60+30,16*60,7*60+30,12*60+30,19*60,9*60,14*60];let picks=[];for(let preferredTime of preferred){for(let [a,b] of ranges){let start=Math.max(a,preferredTime);if(start+duration<=b && !picks.some(p=>Math.abs(p.start-start)<45)){picks.push({start,end:start+duration});break;}}if(picks.length>=3)break;}if(!picks.length && ranges.length){const start=ranges[0][0];picks.push({start,end:start+duration});}return picks.slice(0,3);}
+    function slotCard(date,slot){const type=ui.planType,minutes=ui.planMinutes;return `<div class="slot"><div><strong>${prettyTime(hhmm(slot.start))} – ${prettyTime(hhmm(slot.end))}</strong><small>${minutes}-minute ${type} · no conflicts</small></div><button class="btn primary sm" data-action="plan-slot" data-date="${date}" data-start="${hhmm(slot.start)}" data-end="${hhmm(slot.end)}">Plan it +</button></div>`;}
+    function smartSlotPreview(date){let slots=freeSlots(date,ui.planMinutes);return slots.length?slots.map(s=>slotCard(date,s)).join(''):`<p class="sub">No suitable open time between 7 AM and 9:30 PM for this day. Try a shorter workout or another date.</p>`;}
+    function todayScreen(){const day=today(),fs=foodsFor(day),cal=sum(fs,'calories'),protein=sum(fs,'protein'),minutes=weekWorkoutMinutes(day),steps=stepValue(day);let events=getEvents(day);let upcoming=events.filter(e=>timeVal(e.end)>new Date().getHours()*60+new Date().getMinutes());let sugg=freeSlots(day,ui.planMinutes);if(!sugg.length)sugg=freeSlots(addDays(day,1),ui.planMinutes);let suggestDate=freeSlots(day,ui.planMinutes).length?day:addDays(day,1);return `<div class="hero"><div class="eyebrow">Your day, in balance</div><h1>Make room for what matters.</h1><p class="sub">Classes, shifts, meals and movement — all in one place.</p><div class="actions">${button('+ Add class or shift','add-event','primary')}${button('Log a meal','go-health')}</div></div>
+      <div class="stats"><div class="stat"><small>Food logged</small><div class="value">${Math.round(cal).toLocaleString()}</div><small>of ${state.settings.calories} cal</small><div class="progress"><i style="width:${pct(cal,state.settings.calories)}%"></i></div></div><div class="stat"><small>Protein</small><div class="value">${Math.round(protein)}<span style="font-size:13px;color:var(--muted)"> g</span></div><small>of ${state.settings.protein} g</small><div class="progress blue"><i style="width:${pct(protein,state.settings.protein)}%"></i></div></div><div class="stat"><small>Steps</small><div class="value">${steps.toLocaleString()}</div><small>of ${state.settings.steps.toLocaleString()}</small><div class="progress orange"><i style="width:${pct(steps,state.settings.steps)}%"></i></div></div><div class="stat"><small>Cardio this week</small><div class="value">${minutes}<span style="font-size:13px;color:var(--muted)"> min</span></div><small>of ${state.settings.cardioWeekly} min goal</small><div class="progress"><i style="width:${pct(minutes,state.settings.cardioWeekly)}%"></i></div></div></div>
+      <div class="columns"><section class="section"><div class="section-head"><h2>Today's schedule</h2>${button('View week →','go-schedule','sm ghost')}</div>${events.length?`<div class="items">${events.map(e=>eventCard(e,day)).join('')}</div>`:eventList(day)}</section><section class="section"><div class="section-head"><h2>Smart workout suggestion</h2><span class="pill workout">Cardio first</span></div><div class="panel"><p class="sub" style="margin-bottom:13px">${sugg.length?`Free ${suggestDate===day?'today':'tomorrow'} after your other commitments.`:'Your day is full. Pick another day in Schedule.'}</p>${sugg.length?slotCard(suggestDate,sugg[0]):''}${sugg.length?`<p class="inline-note">Suggestions avoid scheduled events and leave a 10-minute buffer.</p>`:''}</div><div class="panel" style="margin-top:12px"><div class="split-head"><h3>Quick health log</h3><span class="muted" style="font-size:12px">Today</span></div><div class="actions">${button('+ Food','go-health','sm')}${button('+ Cardio','go-health','sm')}${button('+ Weight','go-health','sm')}</div></div></section></div>`;}
+    function scheduleScreen(){let start=weekStart(ui.date),last=addDays(start,6),dates=Array.from({length:7},(_,i)=>addDays(start,i));let slots=freeSlots(ui.date,ui.planMinutes);return `${head('Your schedule','Classes, work shifts and workouts, together.')}
+      <div class="week-head"><div><h2>${formattedDate(start,{month:'short',day:'numeric'})} – ${formattedDate(last,{month:'short',day:'numeric',year:'numeric'})}</h2></div><div class="week-nav"><button class="btn sm ghost" data-action="prev-week" aria-label="Previous week">‹</button><button class="btn sm ghost" data-action="this-week">Today</button><button class="btn sm ghost" data-action="next-week" aria-label="Next week">›</button></div></div>
+      <div class="week-strip">${dates.map(d=>`<button class="day ${d===ui.date?'selected':''} ${d===today()?'today':''}" data-action="select-date" data-date="${d}"><small>${DAY_SHORT[weekday(d)]}</small><strong>${parseDate(d).getDate()}</strong><div class="dot-row">${getEvents(d).slice(0,3).map(e=>`<i class="dot"></i>`).join('')}</div></button>`).join('')}</div>
+      <div class="columns"><section><div class="section-head"><div><h2>${formattedDate(ui.date)}</h2><p class="small-info">${getEvents(ui.date).length} scheduled event${getEvents(ui.date).length===1?'':'s'}</p></div>${button('+ Add','add-event','primary sm')}</div>${eventList(ui.date)}</section>
+      <section><div class="section-head"><h2>Find a workout opening</h2></div><div class="panel"><p class="sub" style="margin-bottom:15px">We check your classes and shifts before recommending times.</p><div class="form-grid" style="margin-bottom:15px"><div class="field"><label for="plan-type">Workout</label><select id="plan-type"><option value="cardio" ${ui.planType==='cardio'?'selected':''}>Cardio</option><option value="strength" ${ui.planType==='strength'?'selected':''}>Strength</option></select></div><div class="field"><label for="plan-minutes">Duration</label><select id="plan-minutes">${[20,30,40,45,60].map(n=>`<option value="${n}" ${ui.planMinutes===n?'selected':''}>${n} minutes</option>`).join('')}</select></div></div><div class="items" id="suggested-slots">${slots.length?smartSlotPreview(ui.date):`<p class="sub">No free windows today for this duration. Try another date or a shorter workout.</p>`}</div><p class="inline-note">These are optional suggestions, not automatic bookings.</p></div></section></div>`;}
+    function weightChart(){let all=[...state.weights].sort((a,b)=>a.date.localeCompare(b.date));let last=all.slice(-12);if(!last.length)return `<p class="sub" style="padding:18px 0">Log a weigh-in to see your trend. Daily fluctuations are normal.</p>`;if(last.length===1)return `<div style="padding:15px 0"><strong style="font-size:26px">${last[0].weight} lbs</strong><p class="sub">First weigh-in logged ${formattedDate(last[0].date,{month:'short',day:'numeric'})}.</p></div>`;let vals=last.map(e=>e.weight),min=Math.min(...vals)-1,max=Math.max(...vals)+1, points=vals.map((v,i)=>`${15+i/(last.length-1)*330},${115-(v-min)/(max-min)*90}`),circles=points.map(p=>{let [x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="3.5" fill="#65e5b4"/>`;}).join('');return `<div class="chart"><svg role="img" aria-label="Weight trend from ${last[0].weight} to ${last.at(-1).weight} pounds" viewBox="0 0 360 130" preserveAspectRatio="none"><path d="M15 25H345 M15 70H345 M15 115H345" fill="none" stroke="#34475f" stroke-width="1" stroke-dasharray="3,6"/><polyline points="${points.join(' ')}" fill="none" stroke="#65e5b4" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>${circles}<text x="15" y="12" fill="#abc0d1" font-size="11">${Math.round(max*10)/10} lbs</text><text x="15" y="128" fill="#abc0d1" font-size="11">${Math.round(min*10)/10} lbs</text></svg></div><p class="small-info">${formattedDate(last[0].date,{month:'short',day:'numeric'})} to ${formattedDate(last.at(-1).date,{month:'short',day:'numeric'})} · ${last.length} entries</p>`;}
+    function healthScreen(){let date=ui.healthDate,foods=foodsFor(date),workouts=workoutFor(date),cal=sum(foods,'calories'),protein=sum(foods,'protein'),minutes=sum(workouts.filter(w=>w.type==='cardio'),'minutes'),weights=state.weights.filter(w=>w.date===date),steps=stepValue(date);return `${head('Health tracker','Track progress without giving up the foods you enjoy.')}
+      <div class="panel" style="margin-top:12px"><div class="split-head"><button class="btn sm ghost" data-action="health-prev">‹</button><div style="text-align:center"><strong>${formattedDate(date)}</strong><div class="small-info">${date===today()?'Today':'Selected day'}</div></div><button class="btn sm ghost" data-action="health-next">›</button></div><div style="display:grid;gap:16px;margin-top:18px">${progress('Calories',cal,state.settings.calories,'cal')}${progress('Protein',protein,state.settings.protein,'g','blue')}${progress('Steps',steps,state.settings.steps,'steps','orange')}</div></div>
+      <div class="health-grid section"><div class="panel"><h2>Log a meal or snack</h2><p class="sub" style="margin:5px 0 15px">Estimate calories and protein from labels or a nutrition app.</p><form id="food-form" class="form-grid"><div class="field full"><label>Food name</label><input name="name" maxlength="100" placeholder="e.g. Chicken rice bowl" required></div><div class="field"><label>Calories</label><input type="number" name="calories" min="0" max="10000" required placeholder="550"></div><div class="field"><label>Protein (g)</label><input type="number" name="protein" min="0" max="500" step="0.1" required placeholder="35"></div><div class="field full"><button class="btn primary full" type="submit">+ Log food</button></div></form><div class="log-list">${foods.length?foods.map(f=>`<div class="log-row"><div><strong>${esc(f.name)}</strong><small>${f.calories} cal · ${f.protein} g protein</small></div><button class="btn ghost sm" data-action="remove-food" data-id="${esc(f.id)}" aria-label="Remove food">✕</button></div>`).join(''):`<p class="small-info">No food logged on this day.</p>`}</div></div>
+      <div class="panel"><h2>Log a completed workout</h2><p class="sub" style="margin:5px 0 15px">Only completed cardio counts toward your weekly goal.</p><form id="workout-form" class="form-grid"><div class="field"><label>Activity</label><select name="type"><option value="cardio">Cardio</option><option value="strength">Strength</option></select></div><div class="field"><label>Minutes</label><input type="number" name="minutes" min="1" max="480" value="30" required></div><div class="field full"><button class="btn primary full" type="submit">+ Log workout</button></div></form><div class="log-list">${workouts.length?workouts.map(w=>`<div class="log-row"><div><strong>${w.type==='strength'?'Strength training':'Cardio'}</strong><small>${w.minutes} min${w.eventId?' · Scheduled workout':''}</small></div><button class="btn ghost sm" data-action="remove-workout" data-id="${esc(w.id)}" aria-label="Remove workout">✕</button></div>`).join(''):`<p class="small-info">No workouts recorded on this day.</p>`}</div><div style="margin-top:13px">${progress('Weekly cardio',weekWorkoutMinutes(date),state.settings.cardioWeekly,'min')}</div></div></div>
+      <div class="two-col-card section"><div class="panel"><h2>Steps</h2><p class="sub" style="margin:5px 0 13px">Enter your steps from Samsung Health if you use it.</p><form id="steps-form" class="form-grid"><div class="field full"><label>Steps for this day</label><input name="steps" type="number" value="${steps}" min="0" max="150000" required></div><div class="field full"><button class="btn primary full" type="submit">Save steps</button></div></form></div><div class="panel"><h2>Weight</h2><p class="sub" style="margin:5px 0 13px">Record morning weigh-ins and follow your overall trend.</p><form id="weight-form" class="form-grid"><div class="field full"><label>Weight (lbs)</label><input name="weight" type="number" step="0.1" min="60" max="700" value="${weights.length?weights.at(-1).weight:''}" placeholder="157.5" required></div><div class="field full"><button class="btn primary full" type="submit">Save weigh-in</button></div></form></div></div>
+      <section class="section"><div class="section-head"><h2>Weight trend</h2><span class="pill workout">Goal ${state.settings.goalWeight} lbs</span></div><div class="panel">${weightChart()}<p class="inline-note">Your weight can fluctuate with meals, hydration and sodium intake. Focus on the trend, not a single reading.</p></div></section>`;}
+    function settingsScreen(){let s=state.settings;return `${head('Your preferences','Set targets that work for your life and training.')}
+      <div class="columns"><section class="panel"><h2>Health goals</h2><p class="sub" style="margin:5px 0 16px">These are editable starting targets, not medical recommendations.</p><form id="settings-form" class="form-grid"><div class="field"><label>Daily calories</label><input name="calories" type="number" min="800" max="6000" value="${s.calories}" required></div><div class="field"><label>Daily protein (g)</label><input name="protein" type="number" min="10" max="350" value="${s.protein}" required></div><div class="field"><label>Daily steps</label><input name="steps" type="number" min="1000" max="50000" value="${s.steps}" required></div><div class="field"><label>Cardio per week (min)</label><input name="cardioWeekly" type="number" min="20" max="1200" value="${s.cardioWeekly}" required></div><div class="field full"><label>Optional weight goal (lbs)</label><input name="goalWeight" type="number" min="60" max="700" step="0.1" value="${s.goalWeight}" required></div><div class="field full"><button class="btn primary full" type="submit">Save goals</button></div></form></section>
+      <section class="panel"><h2>Your data & privacy</h2><p class="sub" style="margin:6px 0 14px">Schedule, meals and weight are stored locally in this browser on this device. No account or server is involved. Clearing browser data can remove your entries, so back them up regularly.</p><div class="items"><button class="btn full" data-action="export">↓ Export backup (.json)</button><button class="btn full" data-action="export-calendar">↓ Export schedule to calendar (.ics)</button><label class="btn full" style="cursor:pointer">↑ Import backup<input type="file" id="import-input" accept=".json,application/json" style="display:none"></label><button class="btn full" data-action="load-demo">Preview with example schedule</button><button class="btn danger full" data-action="clear-data">Clear all stored data</button></div><p class="inline-note">Example schedule is fictional and is added alongside your existing events. The calendar export is a one-time snapshot, not live sync. This version does not sync with Samsung Health, Google Calendar, or other devices.</p></section></div>
+      <section class="section panel"><h2>Add to your Samsung home screen</h2><p class="sub" style="margin-top:8px">When this app is hosted securely (HTTPS), open it in Chrome on your Samsung, tap the ⋮ menu, then choose <strong>Add to Home screen</strong> or <strong>Install app</strong>. Once installed and initially loaded, DayFlow works offline.</p><p class="inline-note">For an installable experience, upload the entire app folder to a static web host. See the included README.</p></section>`;}
+    const navItems=[['today','⌂','Today'],['schedule','▦','Schedule'],['health','♡','Health'],['settings','⚙','Settings']];
+    const icons={today:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',schedule:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 14h3M8 18h3M15 14h2"/>',health:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/><path d="M3 12h5l2-3 3 6 2-3h6"/>',settings:'<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.56V21H10v-.04a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1H3v-4h.04A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88L4.2 7.06 7.06 4.2l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.56V3h4v.04A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.56 1H21v4h-.04A1.7 1.7 0 0 0 19.4 15Z"/>'};
+    function iconSvg(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;}
+    function render(){document.getElementById('top-date').textContent=formattedDate(today(),{weekday:'short',month:'short',day:'numeric'});document.getElementById('nav-buttons').innerHTML=navItems.map(([key,,label])=>`<button class="${ui.screen===key?'active':''}" data-action="nav" data-screen="${key}" ${ui.screen===key?'aria-current="page"':''}>${iconSvg(key)}${label}</button>`).join('');const screens={today:todayScreen,schedule:scheduleScreen,health:healthScreen,settings:settingsScreen};document.getElementById('main').innerHTML=(screens[ui.screen]||todayScreen)();}
+    function openEvent(eventId=null,opts={}){const d=document.getElementById('event-dialog'),e=state.events.find(e=>e.id===eventId);document.getElementById('event-form').reset();document.getElementById('event-dialog-title').textContent=e?'Edit event':'Add an event';document.getElementById('event-id').value=e?.id||'';document.getElementById('event-title').value=e?.title||opts.title||'';document.getElementById('event-type').value=e?.type||opts.type||'school';document.getElementById('workout-kind').value=e?.kind||opts.kind||'cardio';document.getElementById('event-start').value=e?.start||opts.start||'09:00';document.getElementById('event-end').value=e?.end||opts.end||'10:00';document.getElementById('event-repeat').value=e?.repeat||opts.repeat||'weekly';document.getElementById('event-date').value=e?.date||opts.date||ui.date;const days=e?.days||(opts.date?[weekday(opts.date)]:[weekday(ui.date)]);document.getElementById('day-checks').innerHTML=DAY_SHORT.map((name,i)=>`<label><span>${name}</span><input type="checkbox" name="day" value="${i}" ${days.includes(i)?'checked':''}></label>`).join('');document.getElementById('delete-event').style.display=e?'':'none';document.getElementById('event-warning').textContent='';toggleRepeat();toggleWorkoutKind();d.showModal();}
+    function toggleRepeat(){let repeat=document.getElementById('event-repeat').value;document.getElementById('repeat-days').style.display=repeat==='weekly'?'':'none';document.getElementById('one-date').style.display=repeat==='once'?'':'none';}
+    function toggleWorkoutKind(){document.getElementById('workout-kind-wrap').style.display=document.getElementById('event-type').value==='workout'?'':'none';}
+    function saveEvent(form){const f=new FormData(form);const repeat=f.get('repeat'),days=[...form.querySelectorAll('[name=day]:checked')].map(el=>+el.value);const e={id:f.get('eventId')||id(),title:String(f.get('title')||'').trim(),type:f.get('type'),start:f.get('start'),end:f.get('end'),repeat,days:repeat==='weekly'?days:[],date:repeat==='once'?f.get('date'):null,kind:f.get('type')==='workout'?f.get('kind'):null};if(!e.title){toast('Enter an event name');return;}if(timeVal(e.end)<=timeVal(e.start)){toast('End time must be after start time');return;}if(repeat==='weekly'&&!days.length){toast('Select at least one weekday');return;}if(repeat==='once'&&!e.date){toast('Choose a date');return;}const overlapping=conflictFor(e);let i=state.events.findIndex(x=>x.id===e.id);if(i<0)state.events.push(e);else state.events[i]=e;save();document.getElementById('event-dialog').close();render();toast(overlapping?'Saved, but overlaps another event':'Event saved');}
+    function conflictFor(e){return state.events.some(x=>x.id!==e.id&&((e.repeat==='once'&&getEvents(e.date).some(a=>a.id===x.id)) || (e.repeat==='weekly'&&(x.repeat==='weekly'&&e.days.some(d=>x.days.includes(d))||x.repeat==='once'&&e.days.includes(weekday(x.date)))) )&&timeVal(e.start)<timeVal(x.end)&&timeVal(e.end)>timeVal(x.start));}
+    function planSlot(el){let date=el.dataset.date,start=el.dataset.start,end=el.dataset.end;let slotValid=freeSlots(date,ui.planMinutes).some(s=>hhmm(s.start)===start&&hhmm(s.end)===end);if(!slotValid){toast('That opening changed. Refresh suggestions.');render();return;}let type=ui.planType==='strength'?'Strength training':'Cardio session';state.events.push({id:id(),title:type,type:'workout',kind:ui.planType,start,end,repeat:'once',date,days:[]});save();render();toast('Workout added to your calendar');}
+    function completeWorkout(eid,date){let e=state.events.find(x=>x.id===eid);if(!e||e.type!=='workout'||!getEvents(date).some(x=>x.id===eid))return;if(state.workouts.some(w=>w.eventId===eid&&w.date===date)){toast('Already marked complete');return;}state.workouts.push({id:id(),date,minutes:timeVal(e.end)-timeVal(e.start),type:e.kind|| (e.title.toLowerCase().includes('strength')?'strength':'cardio'),eventId:eid});save();render();toast('Workout marked complete!');}
+    function dateUpdate(n){ui.date=addDays(ui.date,n);render();}
+    async function importFile(file){if(!file)return;try{const imported=JSON.parse(await file.text());if(imported.version!==1||!Array.isArray(imported.events)||!Array.isArray(imported.foods)||!Array.isArray(imported.workouts)||!Array.isArray(imported.weights))throw Error('Invalid DayFlow backup');if(!confirm('Replace all current data with this backup?'))return;const sanitized={...DEFAULTS,...imported,settings:{...DEFAULTS.settings,...imported.settings},steps:imported.steps&&typeof imported.steps==='object'?imported.steps:{}};state=sanitized;save();render();toast('Backup imported');}catch(e){toast('Could not read a valid DayFlow backup');}}
+    function downloadText(contents,filename,mime){const blob=new Blob([contents],{type:mime});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+    function exportCalendar(){if(!state.events.length){toast('Add some schedule events before exporting');return;}const weekdays=['MO','TU','WE','TH','FR','SA','SU'];const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');const parts=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//DayFlow//Personal Planner//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:DayFlow Schedule'];let n=0;for(const e of state.events){if(!e.start||!e.end||!e.title)continue;let date=e.date;if(e.repeat==='weekly'){if(!e.days?.length)continue;date=today();for(let i=0;i<7;i++){const candidate=addDays(today(),i);if(e.days.includes(weekday(candidate))){date=candidate;break;}}}if(!date)continue;const dt=date.replace(/-/g,'');const icalText=x=>String(x||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');parts.push('BEGIN:VEVENT','UID:'+icalText(e.id)+'@dayflow.local','DTSTAMP:'+stamp,'DTSTART:'+dt+'T'+e.start.replace(':','')+'00','DTEND:'+dt+'T'+e.end.replace(':','')+'00','SUMMARY:'+icalText(e.title),'DESCRIPTION:Exported from DayFlow. This is a snapshot.');if(e.repeat==='weekly')parts.push('RRULE:FREQ=WEEKLY;BYDAY='+e.days.map(d=>weekdays[d]).join(','));parts.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Upcoming DayFlow event','TRIGGER:-PT15M','END:VALARM','END:VEVENT');n++;}parts.push('END:VCALENDAR');downloadText(parts.join('\r\n')+'\r\n',`dayflow-schedule-${today()}.ics`,'text/calendar;charset=utf-8');toast(`Exported ${n} calendar events`);}
+    function exportData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`dayflow-backup-${today()}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('Backup ready to save');}
+    document.addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let action=b.dataset.action;switch(action){case 'nav':ui.screen=b.dataset.screen;render();scrollTo(0,0);break;case 'go-health':ui.screen='health';ui.healthDate=today();render();scrollTo(0,0);break;case 'go-schedule':ui.screen='schedule';ui.date=today();render();scrollTo(0,0);break;case 'add-event':openEvent(null,{date:ui.date});break;case 'edit-event':openEvent(b.dataset.id);break;case 'close-dialog':document.getElementById('event-dialog').close();break;case 'delete-event':{let eventId=document.getElementById('event-id').value;if(eventId&&confirm('Delete this event?')){state.events=state.events.filter(x=>x.id!==eventId);save();document.getElementById('event-dialog').close();render();toast('Event deleted');}break;}case 'select-date':ui.date=b.dataset.date;render();break;case 'prev-week':dateUpdate(-7);break;case 'next-week':dateUpdate(7);break;case 'this-week':ui.date=today();render();break;case 'health-prev':ui.healthDate=addDays(ui.healthDate,-1);render();break;case 'health-next':ui.healthDate=addDays(ui.healthDate,1);render();break;case 'plan-slot':planSlot(b);break;case 'complete-workout':completeWorkout(b.dataset.id,b.dataset.date);break;case 'remove-food':state.foods=state.foods.filter(x=>x.id!==b.dataset.id);save();render();break;case 'remove-workout':state.workouts=state.workouts.filter(x=>x.id!==b.dataset.id);save();render();break;case 'export':exportData();break;case 'export-calendar':exportCalendar();break;case 'clear-data':if(confirm('Permanently erase all schedules and health logs on this device? Export a backup first if you want to keep them.')){state=structuredClone(DEFAULTS);save();render();toast('All stored data cleared');}break;case 'load-demo':{if(!confirm('Add fictional example classes and shifts to your existing calendar?'))break;state.events.push(...[{title:'Sample: Engineering lecture',type:'school',start:'09:00',end:'10:15',days:[0,2,4]},{title:'Sample: Work shift',type:'work',start:'12:00',end:'17:00',days:[1,3]},{title:'Sample: Study group',type:'study',start:'14:00',end:'16:00',days:[0,2]}].map(x=>({...x,id:id(),repeat:'weekly',date:null})));save();ui.screen='schedule';ui.date=today();render();toast('Example schedule added');break;}}});
+    document.addEventListener('change',e=>{if(e.target.id==='event-repeat')toggleRepeat();else if(e.target.id==='event-type')toggleWorkoutKind();else if(e.target.id==='plan-type'){ui.planType=e.target.value;render();}else if(e.target.id==='plan-minutes'){ui.planMinutes=+e.target.value;render();}else if(e.target.id==='import-input')importFile(e.target.files?.[0]);});
+    document.addEventListener('submit',e=>{if(!['event-form','food-form','workout-form','steps-form','weight-form','settings-form'].includes(e.target.id))return;e.preventDefault();let form=e.target,f=new FormData(form),which=form.id;if(which==='event-form'){saveEvent(form);return;}if(which==='food-form'){state.foods.push({id:id(),date:ui.healthDate,name:String(f.get('name')).trim(),calories:+f.get('calories'),protein:+f.get('protein')});toast('Meal logged');}if(which==='workout-form'){state.workouts.push({id:id(),date:ui.healthDate,type:f.get('type'),minutes:+f.get('minutes')});toast('Workout logged');}if(which==='steps-form'){state.steps[ui.healthDate]=+f.get('steps');toast('Steps saved');}if(which==='weight-form'){state.weights=state.weights.filter(w=>w.date!==ui.healthDate);state.weights.push({id:id(),date:ui.healthDate,weight:+f.get('weight')});toast('Weight saved');}if(which==='settings-form'){for(const k of ['calories','protein','steps','cardioWeekly','goalWeight'])state.settings[k]=+f.get(k);toast('Goals saved');}save();render();});
+    document.getElementById('event-dialog').addEventListener('click',e=>{if(e.target.id==='event-dialog')e.target.close();});
+    if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    render();
+    window.DayFlowTest={state:()=>state,ui:()=>ui,getEvents,freeSlots,weekWorkoutMinutes};
+  </script>
+</body>
+</html>
